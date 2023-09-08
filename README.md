@@ -1,3 +1,23 @@
 # Nuber Eats
 
 The Backend of Nuber Eats Clone
+
+
+
+##User Entity:
+
+- id
+- createdAt
+- updatedAt
+
+- email
+- passowrd
+- role(client|owner|delivery)
+
+##User CRUD:
+
+- Create Account
+- Log In
+- See Profile
+- Edit Profile
+- Verify Email
