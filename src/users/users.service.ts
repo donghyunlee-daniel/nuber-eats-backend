@@ -3,14 +3,16 @@ import { User } from "./entities/user.entity";
 import { Repository, ReturningStatementNotSupportedError } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { CreateAccountInput } from "./dtos/create-account.dto";
-import { error } from "console";
 import { LoginInput } from "./dtos/login.dto";
+import * as jwt from "jsonwebtoken"
+import { JwtService } from "src/jwt/jwt.service";
 
 
 @Injectable()
 export class usersService{
     constructor(
-        @InjectRepository(User) private readonly users: Repository<User>
+        @InjectRepository(User) private readonly users: Repository<User>,
+        private readonly jwtService: JwtService,
     ) {}
 
     async createAccount({email,password,role}: CreateAccountInput): Promise<{ok:boolean, error?:string}>{
@@ -46,9 +48,10 @@ export class usersService{
                     error:"Wrong password',"
                 }
             }
+            const token = this.jwtService.sign(user.id)
             return{
                 ok:true,
-                token:"lalalala"
+                token
             }
         // make a JWT and give it to the user
         }catch(error)
