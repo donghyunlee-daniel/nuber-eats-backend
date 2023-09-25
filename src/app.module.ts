@@ -38,6 +38,7 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       driver: ApolloDriver,
+      context: ({req}) => ({user: req['user']})
     }),
     UsersModule,
     JwtModule.forRoot({
