@@ -4,15 +4,16 @@ import { Repository, ReturningStatementNotSupportedError } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { CreateAccountInput } from "./dtos/create-account.dto";
 import { LoginInput } from "./dtos/login.dto";
-import * as jwt from "jsonwebtoken"
 import { JwtService } from "src/jwt/jwt.service";
 import { EditProfileInput } from "./dtos/edit-profile.dto";
+import { Verification } from "./entities/verification.entity";
 
 
 @Injectable()
 export class usersService{
     constructor(
         @InjectRepository(User) private readonly users: Repository<User>,
+        @InjectRepository(Verification) private readonly verifications: Repository<Verification>,
         private readonly jwtService: JwtService,
     ) {}
 
@@ -22,7 +23,10 @@ export class usersService{
             if(exists){
                 return {ok:false, error:"There is a user with that email already"};
             }
-            await this.users.save(this.users.create({email,password,role}))
+            const user = await this.users.save(this.users.create({email,password,role}))
+            await this.verifications.save(this.verifications.create({
+                user
+            }))
             return {ok:true};
         }
         catch(e)
@@ -71,11 +75,22 @@ export class usersService{
         const user = await this.users.findOne({where: {id:userId}})
         if(email){
             user.email = email
+            user.verified = false;
+            await this.verifications.save(this.verifications.create({user}))
         }
         if( password){
             user.password = password;
         }
         
         return this.users.save(user)
+    }
+
+    async verifyEmail(code:string):Promise<boolean>{
+        const verification = await this.verifications.findOne({where: {code},relations: ['user']});
+        if(verification){
+            verification.user.verified = true
+            this.users.save(verification.user);
+        }
+        return false;
     }
 }
