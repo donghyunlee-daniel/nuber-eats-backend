@@ -15,13 +15,13 @@ import { VerfiyEmailOutput } from './dtos/verify-email.dto';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
-export class usersService {
+export class UserService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
-    private readonly mailService:MailService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -31,6 +31,7 @@ export class usersService {
   }: CreateAccountInput): Promise<CreateAccountOutput> {
     try {
       const exists = await this.users.findOne({ where: { email } });
+      console.log(exists);
       if (exists) {
         return { ok: false, error: 'There is a user with that email already' };
       }
@@ -42,7 +43,7 @@ export class usersService {
           user,
         }),
       );
-      this.mailService.sendVerificationEmail(user.email,verification.code)
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
       return { ok: false, error: "Couldn't create account" };
@@ -67,7 +68,7 @@ export class usersService {
       if (!passwordCorrect) {
         return {
           ok: false,
-          error: "Wrong password",
+          error: 'Wrong password',
         };
       }
       const token = this.jwtService.sign(user.id);
@@ -79,19 +80,18 @@ export class usersService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: "Can't log user in.",
       };
     }
   }
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ where: { id } });
-      if (user) {
-        return {
-          ok: true,
-          user: user,
-        };
-      }
+      const user = await this.users.findOneOrFail({ where: { id } });
+
+      return {
+        ok: true,
+        user,
+      };
     } catch (error) {
       return {
         ok: false,
@@ -105,13 +105,14 @@ export class usersService {
     { email, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
     try {
-      
       const user = await this.users.findOne({ where: { id: userId } });
       if (email) {
         user.email = email;
         user.verified = false;
-        const verification = await this.verifications.save(this.verifications.create({ user }));
-        this.mailService.sendVerificationEmail(user.email,verification.code)
+        const verification = await this.verifications.save(
+          this.verifications.create({ user }),
+        );
+        this.mailService.sendVerificationEmail(user.email, verification.code);
       }
       if (password) {
         user.password = password;
@@ -123,7 +124,7 @@ export class usersService {
     } catch (error) {
       return {
         ok: false,
-        error: 'Could not update profile'
+        error: 'Could not update profile',
       };
     }
   }
@@ -138,11 +139,11 @@ export class usersService {
         verification.user.verified = true;
         this.users.save(verification.user);
         await this.verifications.delete(verification.id);
-        return {ok:true};
+        return { ok: true };
       }
-      return {ok: false, error: 'Verification not found'}
+      return { ok: false, error: 'Verification not found' };
     } catch (error) {
-      return {ok:false, error};
+      return { ok: false, error };
     }
   }
 }
