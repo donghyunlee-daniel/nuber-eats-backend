@@ -152,7 +152,7 @@ describe('userService', () => {
       const result = await service.login(loginArgs);
       expect(jwtService.sign).toHaveBeenCalledTimes(1);
       expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
-      console.log(result);
+      
       expect(result).toEqual({ ok: true, token: 'signed-token-baby' });
     });
     it('should fail on exception', async () => {
