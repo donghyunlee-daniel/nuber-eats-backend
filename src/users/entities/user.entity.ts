@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { CoreEntity } from "src/common/entities/core.entityt";
+import { CoreEntity } from "src/common/entities/core.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity } from "typeorm";
 import * as bcrypt from 'bcrypt'
 import { InternalServerErrorException } from "@nestjs/common";
@@ -18,7 +18,7 @@ registerEnumType(UserRole, {name:"UserRole"})
 @Entity()
 export class User extends CoreEntity{
 
-    @Column()
+    @Column({unique:true})
     @Field(type=>String)
     @IsEmail()
     email:string;
