@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Order } from './entities/order.entity';
+import { OrderService } from './orders.service';
+import { OrderResolver } from './entities/orders.resolver';
+import { Restaurant } from 'src/restaurant/entities/restaurant.entity';
+import { OrderItem } from './entities/order-item.entity';
+import { Dish } from 'src/restaurant/entities/dish.entity';
+
+@Module({
+    imports: [TypeOrmModule.forFeature([Order,Restaurant, OrderItem, Dish])],
+    providers: [
+        OrderService,
+        OrderResolver
+    ]
+})
+export class OrdersModule {}
