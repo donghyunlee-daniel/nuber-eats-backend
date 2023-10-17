@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { Order } from './order.entity';
 import { OrderService } from '../orders.service';
 import { CreateOrderInput, CreateOrderOutput } from '../dtos/create-order.dto';
@@ -50,4 +50,8 @@ export class OrderResolver {
   }
 
   
+  @Subscription(returns => String)
+  orderSubscription() {
+    
+  }
 }
