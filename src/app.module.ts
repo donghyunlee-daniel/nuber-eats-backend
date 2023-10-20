@@ -1,6 +1,6 @@
 import { ApolloDriver } from '@nestjs/apollo';
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
-import { GraphQLModule } from '@nestjs/graphql';
+import { Context, GraphQLModule } from '@nestjs/graphql';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -48,10 +48,21 @@ import { OrderItem } from './orders/entities/order-item.entity';
       logging: process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities:[User,Verification, Restaurant, Category, Dish, Order, OrderItem]
     }),
+    
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       driver: ApolloDriver,
-      context: ({req}) => ({user: req['user']})
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect:(connectionParams) => {
+           return { token: connectionParams['X-JWT']}
+          }
+        }
+      },
+      context: ({req}) => {
+        const TOKEN_KEY = 'x-jwt'
+        return { token: req.headers[TOKEN_KEY]}
+      }
     }),
     UsersModule,
     JwtModule.forRoot({
@@ -70,11 +81,4 @@ import { OrderItem } from './orders/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule{
-  configure(consumer:MiddlewareConsumer){
-    consumer.apply(JwtMiddleware).forRoutes({
-      path:"/graphql",
-      method: RequestMethod.ALL,
-    });
-  }
-}
+export class AppModule {}

@@ -8,7 +8,10 @@ import { Role } from 'src/auth/role.decorator';
 
 import { GetOrdersInput, GetOrdersOutput } from '../dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from '../dtos/get-order.dto';
-import { EditOrderInput, EditOrderOutput } from '../dtos/edit-order.dto';
+import { EditOrderInput, EditOrderOutput } from '../dtos/edit-order.dto'; 
+import { PubSub } from 'graphql-subscriptions';
+
+const pubsub = new PubSub();
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -49,9 +52,18 @@ export class OrderResolver {
     return this.ordersService.editOrder(user,editOrderInput)
   }
 
+  @Mutation(returns => Boolean)
+  potatoReady(){
+    pubsub.publish("hotPotatos",{readyPotatos: "Your potato is ready"})
+    return true;
+  }
   
+   
   @Subscription(returns => String)
-  orderSubscription() {
+  @Role(['Any'])
+  readyPotatos(@AuthUser() user:User) {
+    console.log("User",user);
+    return pubsub.asyncIterator("hotPotatos")
     
   }
 }
