@@ -4,26 +4,6 @@ The Backend of Nuber Eats Clone
 
 
 
-##User Entity:
+Add Driver to Order (Done)
 
-- id
-- createdAt
-- updatedAt
-
-- email
-- passowrd
-- role(client|owner|delivery)
-
-##User CRUD:
-
-- Create Account
-- Log In
-- See Profile
-- Edit Profile
-- Verify Email
-
-##Restaurant Model
-- name
-- category
-- address
-- coverImage
+- Payments (CRON)
