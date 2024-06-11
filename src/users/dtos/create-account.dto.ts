@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType, PickType } from "@nestjs/graphql";
 import { User } from "../entities/user.entity";
+import { Mutationoutput } from "src/common/dtos/output.dto";
 
 
 
@@ -8,10 +9,4 @@ export class CreateAccountInput extends PickType(User, ["email", "password", "ro
 {}
 
 @ObjectType()
-export class CreateAccountOutput{
-    @Field(type => String, {nullable:true})
-    error?: string; 
-    @Field(type=>Boolean)
-    ok: boolean;
-    
-}
+export class CreateAccountOutput extends Mutationoutput{}
