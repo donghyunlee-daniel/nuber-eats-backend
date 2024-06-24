@@ -11,6 +11,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -117,8 +118,10 @@ export class UsersService {
         user.verified = false;
         await this.verifications.save(this.verifications.create({ user }));
       }
+      console.log(password)
       if (password) {
         user.password = password;
+        console.log("here")
       }
 
       await this.users.save(user);
@@ -132,7 +135,7 @@ export class UsersService {
     }
   }
 
-  async verifyEmail(code: string): Promise<Boolean> {
+  async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
       const verification = await this.verifications.findOne({
         where: { code },
@@ -141,12 +144,20 @@ export class UsersService {
       if (verification) {
         verification.user.verified = true;
         this.users.save(verification.user);
-        return true;
+        return {
+          ok:true
+        }
       }
-      return false;
+      return{
+        ok:false,
+        error:"Verification code is not correct"
+      }
     } catch (e) {
       console.log(e);
-      return false;
+      return{
+        ok:false,
+        error:"Something is wrong"
+      }
     }
   }
 }
