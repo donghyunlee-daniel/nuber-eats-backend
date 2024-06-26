@@ -12,6 +12,7 @@ import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
@@ -20,6 +21,7 @@ export class UsersService {
     @InjectRepository(Verification)
     private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -38,11 +40,12 @@ export class UsersService {
       const user = await this.users.save(
         this.users.create({ email, password, role }),
       );
-      await this.verifications.save(
+      const verification = await this.verifications.save(
         this.verifications.create({
           user,
         }),
       );
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return {
         ok: true,
       };
@@ -116,12 +119,13 @@ export class UsersService {
       if (email) {
         user.email = email;
         user.verified = false;
-        await this.verifications.save(this.verifications.create({ user }));
+        const verification = await this.verifications.save(this.verifications.create({ user }));
+        this.mailService.sendVerificationEmail(user.email, verification.code)
       }
-      console.log(password)
+      console.log(password);
       if (password) {
         user.password = password;
-        console.log("here")
+        console.log('here');
       }
 
       await this.users.save(user);
@@ -146,19 +150,19 @@ export class UsersService {
         await this.users.save(verification.user);
         await this.verifications.delete(verification.id);
         return {
-          ok:true
-        }
+          ok: true,
+        };
       }
-      return{
-        ok:false,
-        error:"Verification code is not correct"
-      }
+      return {
+        ok: false,
+        error: 'Verification code is not correct',
+      };
     } catch (e) {
       console.log(e);
-      return{
-        ok:false,
-        error:"Something is wrong"
-      }
+      return {
+        ok: false,
+        error: 'Something is wrong',
+      };
     }
   }
 }
