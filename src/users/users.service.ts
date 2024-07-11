@@ -117,10 +117,8 @@ export class UserService {
         const verification = await this.verifications.save(this.verifications.create({ user }));
         this.mailService.sendVerificationEmail(user.email, verification.code)
       }
-      console.log(password);
       if (password) {
         user.password = password;
-        console.log('here');
       }
 
       await this.users.save(user);
@@ -129,7 +127,7 @@ export class UserService {
     } catch (error) {
       return {
         ok: false,
-        error,
+        error: "Could not update profile",
       };
     }
   }
@@ -150,13 +148,12 @@ export class UserService {
       }
       return {
         ok: false,
-        error: 'Verification code is not correct',
+        error: 'Verification not found',
       };
     } catch (e) {
-      console.log(e);
       return {
         ok: false,
-        error: 'Something is wrong',
+        error: 'Could not verify email',
       };
     }
   }
