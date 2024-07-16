@@ -18,7 +18,7 @@ export class MailService {
     const form = new FormData();
     form.append(
       'from',
-      `Daneil from Nuber Eats <Nuber-eats@${this.options.domain}>`,
+      `Daniel from Nuber Eats <Nuber-eats@${this.options.domain}>`,
     );
     form.append('to', `zmsdong@naver.com`);
     form.append('subject', subject);

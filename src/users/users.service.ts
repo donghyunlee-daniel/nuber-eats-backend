@@ -66,7 +66,7 @@ export class UserService {
       if (!user) {
         return {
           ok: false,
-          error: 'User not found',
+          error: 'User Not Found',
         };
       }
       const passwordCorrect = await user.checkPassword(password);
