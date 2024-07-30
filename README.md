@@ -38,3 +38,14 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - address
 - coverImage
 
+## Restaurant CRUD
+- create Restaurant
+- Edit Restaurant
+- Delete Restaurant
+- See Restaurant with pagination
+- See Restaurant by Category
+- See Categories
+- Create Dish
+- Edit Dish
+- Delete Dish
+
