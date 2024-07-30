@@ -7,6 +7,6 @@ import { CateogryRepository } from './repositories/category.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Restaurant, CateogryRepository])],
-  providers: [RestaurantResolver, RestaurantService,]
+  providers: [RestaurantResolver, RestaurantService, CateogryRepository]
 })
 export class RestaurantModule {}
