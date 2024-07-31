@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Restaurant } from './entities/restaurant.entity';
 import { RestaurantService } from './restaurant.service';
 import {
@@ -12,6 +12,12 @@ import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
+import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
+import { Category } from './entities/category.entity';
+import { AllCategoriesOutput } from './dtos/all-cateogories.dto';
 
 @Resolver((of) => Restaurant)
 export class RestaurantResolver {
@@ -36,5 +42,29 @@ export class RestaurantResolver {
     @Args('input') editRestaurantInput: EditRestaurantInput,
   ): Promise<EditRestaurantOutput> {
     return this.restaurantService.editRestaurant(owner, editRestaurantInput);
+  }
+
+  @Mutation((returns) => DeleteRestaurantOutput)
+  @Role(['Owner'])
+  deleteRestaurant(
+    @AuthUser() owner: User,
+    @Args('input') deleteRestaurantInput: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    return this.restaurantService.deleteRestauant(owner, deleteRestaurantInput);
+  }
+}
+
+@Resolver(of => Category)
+export class CategoryResolver{
+  constructor(private readonly restaurantService: RestaurantService){}
+
+  @ResolveField(type => Int)
+  restaurantCount(@Parent() category: Category): Promise<number> {
+    return this.restaurantService.countRestaurant(category);
+  }
+  
+  @Query(type => AllCategoriesOutput)
+  allCategories():Promise<AllCategoriesOutput>{
+    return this.restaurantService.allCategories();
   }
 }

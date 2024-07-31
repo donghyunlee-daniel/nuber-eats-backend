@@ -13,6 +13,11 @@ import {
   EditRestaurantOutput,
 } from './dtos/edit-restaurant.dto';
 import { CateogryRepository } from './repositories/category.repository';
+import {
+  DeleteRestaurantInput,
+  DeleteRestaurantOutput,
+} from './dtos/delete-restaurant.dto';
+import { AllCategoriesOutput } from './dtos/all-cateogories.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -79,11 +84,60 @@ export class RestaurantService {
       return {
         ok: true,
       };
-    } catch(error) {
+    } catch (error) {
       return {
         ok: false,
         error,
       };
     }
+  }
+
+  async deleteRestauant(
+    owner: User,
+    { restaurantId }: DeleteRestaurantInput,
+  ): Promise<DeleteRestaurantOutput> {
+    const restaurant = await this.restaurants.findOne({
+      where: { id: restaurantId },
+    });
+    if (!restaurant)
+      return {
+        ok: false,
+        error: 'Restaurant Not Found',
+      };
+    if (owner.id !== restaurant.ownerId)
+      return {
+        ok: false,
+        error: 'You cannot delete a restaurant that you do not own',
+      };
+    try {
+      await this.restaurants.delete(restaurantId);
+      return{
+        ok:true
+      }
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not delete the restaurant',
+      };
+    }
+  }
+
+  async allCategories():Promise<AllCategoriesOutput> {
+    try{
+      const categories = await this.categories.find();
+      return{
+        ok:true,
+        categories
+      }
+    }catch{
+      return{
+        ok:false,
+        error: 'Could not load categories'
+      }
+    }
+  }
+
+  countRestaurant(category: Category) {
+    return this.restaurants.count({where: {category : {id:category.id}}})
   }
 }

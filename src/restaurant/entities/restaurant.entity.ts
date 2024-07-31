@@ -31,11 +31,12 @@ export class Restaurant extends CoreEntity {
   })
   @Field((type) => Category, { nullable: true })
   category: Category;
-
+  
   @ManyToOne((type) => User, (user) => user.restaurants, {onDelete: 'CASCADE'})
   @Field((type) => User)
   owner: User;
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+
 }
