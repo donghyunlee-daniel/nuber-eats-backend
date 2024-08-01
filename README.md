@@ -46,7 +46,16 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - See Restaurant with pagination
 - See Restaurant by Category
 - See Categories
+
+## Dish
 - Create Dish
 - Edit Dish
 - Delete Dish
+
+## Order
+- Orders CRUD
+- Orders Subscription (Owner, Delivery, Client)
+
+## Payment
+- Using 'Paddle'  
 
