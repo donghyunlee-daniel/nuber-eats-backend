@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -18,6 +18,10 @@ import {
   DeleteRestaurantOutput,
 } from './dtos/delete-restaurant.dto';
 import { AllCategoriesOutput } from './dtos/all-cateogories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
+import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
 
 @Injectable()
 export class RestaurantService {
@@ -111,9 +115,9 @@ export class RestaurantService {
       };
     try {
       await this.restaurants.delete(restaurantId);
-      return{
-        ok:true
-      }
+      return {
+        ok: true,
+      };
     } catch {
       return {
         ok: false,
@@ -122,22 +126,125 @@ export class RestaurantService {
     }
   }
 
-  async allCategories():Promise<AllCategoriesOutput> {
-    try{
-      const categories = await this.categories.find();
-      return{
-        ok:true,
-        categories
-      }
-    }catch{
-      return{
-        ok:false,
-        error: 'Could not load categories'
-      }
+  async allCategories(): Promise<AllCategoriesOutput> {
+    try {
+      const categories = await this.categories.find({
+        relations: ['restaurants'],
+      });
+      return {
+        ok: true,
+        categories,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load categories',
+      };
     }
   }
 
   countRestaurant(category: Category) {
-    return this.restaurants.count({where: {category : {id:category.id}}})
+    return this.restaurants.count({ where: { category: { id: category.id } } });
+  }
+
+  async findCategoryBySlug({
+    slug,
+    page,
+  }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      const category = await this.categories.findOne({
+        where: { slug: slug },
+      });
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Category not found',
+        };
+      }
+      const restaurants = await this.restaurants.find({
+        where: {
+          category: {
+            id: category.id,
+          },
+        },
+        take: 3,
+        skip: (page - 1) * 3,
+      });
+      category.restaurants = restaurants;
+      const totalResults = await this.countRestaurant(category);
+      console.log(totalResults);
+      return {
+        ok: true,
+        category,
+        restaurants,
+        totalPages: Math.ceil(totalResults / 3),
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load category',
+      };
+    }
+  }
+
+  async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      const [results, totalResult] = await this.restaurants.findAndCount({
+        take: 3,
+        skip: (page - 1) * 3,
+      });
+      return {
+        ok: true,
+        results,
+        totalPages: Math.ceil(totalResult / 3),
+        totalResult,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not load restaurants',
+      };
+    }
+  }
+
+  async findRestaurantById({
+    restaurantId,
+  }: RestaurantInput): Promise<RestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id: restaurantId },
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant Not Found',
+        };
+      }
+      return {
+        ok: true,
+        restaurant,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not find restaurant',
+      };
+    }
+  }
+
+  async searchRestaurantByName({query,page}: SearchRestaurantInput) : Promise<SearchRestaurantOutput> {
+    try{
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        where: {
+          name: Like(`%${query}%`)
+        }
+      })
+    }
+    catch{
+      return{
+        ok:false,
+        error: 'Could not search for the restaurant'
+      }
+    }
   }
 }

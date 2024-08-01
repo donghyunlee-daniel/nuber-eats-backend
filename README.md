@@ -42,6 +42,7 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - create Restaurant
 - Edit Restaurant
 - Delete Restaurant
+- Search Restaurant
 - See Restaurant with pagination
 - See Restaurant by Category
 - See Categories
