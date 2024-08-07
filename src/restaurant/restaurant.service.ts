@@ -21,7 +21,12 @@ import { AllCategoriesOutput } from './dtos/all-cateogories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dto';
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dto';
-import { SearchRestaurantInput, SearchRestaurantOutput } from './dtos/search-restaurant.dto';
+import {
+  SearchRestaurantInput,
+  SearchRestaurantOutput,
+} from './dtos/search-restaurant.dto';
+import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dto';
+import { Dish } from './entities/dish.entity';
 
 @Injectable()
 export class RestaurantService {
@@ -29,6 +34,8 @@ export class RestaurantService {
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
     private readonly categories: CateogryRepository,
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   async createRestaurant(
@@ -213,6 +220,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOne({
         where: { id: restaurantId },
+        relations: ['menu'],
       });
       if (!restaurant) {
         return {
@@ -232,26 +240,62 @@ export class RestaurantService {
     }
   }
 
-  async searchRestaurantByName({query,page}: SearchRestaurantInput) : Promise<SearchRestaurantOutput> {
-    try{
+  async searchRestaurantByName({
+    query,
+    page,
+  }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    try {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: {
-          //name: ILike(`%${query}%`)    same as 
-          name: Raw(name => `${name} ILIKE '%${query}%'`)
-        }
-      })
-      return{
-        ok:true,
+          //name: ILike(`%${query}%`)    same as
+          name: Raw((name) => `${name} ILIKE '%${query}%'`),
+        },
+      });
+      return {
+        ok: true,
         restaurants,
-        totalPages: Math.ceil(totalResults/3),
+        totalPages: Math.ceil(totalResults / 3),
         totalResults,
-      }
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not search for the restaurant',
+      };
     }
-    catch{
-      return{
-        ok:false,
-        error: 'Could not search for the restaurant'
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id: createDishInput.restaurantId },
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: 'Restaurant Not Found',
+        };
       }
+      if (owner.id !== restaurant.ownerId) {
+        return {
+          ok: false,
+          error: 'You cannot create a dish',
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant }),
+      );
+      return {
+        ok: true,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: 'Could not create a dish',
+      };
     }
   }
 }
