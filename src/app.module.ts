@@ -20,6 +20,8 @@ import { RestaurantModule } from './restaurant/restaurant.module';
 import { Restaurant } from './restaurant/entities/restaurant.entity';
 import { Category } from './restaurant/entities/category.entity';
 import { Dish } from './restaurant/entities/dish.entity';
+import { OrdersModule } from './orders/orders.module';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -54,7 +56,7 @@ import { Dish } from './restaurant/entities/dish.entity';
       database: process.env.DB_NAME,
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: process.env.NODE_ENV !== 'prod'&& process.env.NODE_ENV !== 'test',
-      entities: [User, Verification, Restaurant, Category, Dish],
+      entities: [User, Verification, Restaurant, Category, Dish, Order],
     }),
     UsersModule,
     JwtModule.forRoot({
@@ -67,6 +69,7 @@ import { Dish } from './restaurant/entities/dish.entity';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     RestaurantModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],
