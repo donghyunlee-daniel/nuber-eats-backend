@@ -34,7 +34,8 @@ export class OrderService {
           error: 'Restaurant Not Found',
         };
       }
-
+      let orderFinalPrice = 0;
+      const orderItems: OrderItem[] = [];
       for (const item of createOrderInput.items) {
         const dish = await this.dishes.findOne({ where: { id: item.dishId } });
         if (!dish) {
@@ -43,35 +44,42 @@ export class OrderService {
             error: 'Dish Not Found',
           };
         }
-        console.log(`Dish Price: ${dish.price}`)
+        let dishFinalPrice = dish.price;
         for (const itemOption of item.options) {
           const dishOption = dish.options.find(
             (dishOption) => dishOption.name === itemOption.name,
           );
           if (dishOption) {
             if (dishOption.extra) {
-              console.log(`$USD +${dishOption.extra}`);
+              dishFinalPrice += dishOption.extra;
             } else {
               const dishOptionChoice = dishOption.choices.find(
                 (optionChoice) => optionChoice.name === itemOption.choice,
               );
               if (dishOptionChoice) {
                 if (dishOptionChoice.extra) {
-                  console.log(`$USD +${dishOptionChoice.extra}`);
+                  dishFinalPrice += dishOptionChoice.extra;
                 }
               }
             }
           }
         }
-
-        // await this.orderItems.save(
-        //   this.orderItems.create({ dish, options: item.options }),
-        // );
+        orderFinalPrice += dishFinalPrice;
+        const orderItem = await this.orderItems.save(
+          this.orderItems.create({ dish, options: item.options }),
+        );
+        orderItems.push(orderItem);
       }
-      //const order = await this.orders.save(this.orders.create({ customer,restaurant }));
-
+      await this.orders.save(
+        this.orders.create({
+          customer,
+          restaurant,
+          total: orderFinalPrice,
+          items: orderItems,
+        }),
+      );
       return {
-        ok: false,
+        ok: true,
       };
     } catch {
       return {
