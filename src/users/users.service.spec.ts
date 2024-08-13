@@ -140,7 +140,7 @@ describe('UserSerivce', () => {
       );
       expect(result).toEqual({
         ok: false,
-        error: 'User not found',
+        error: 'User Not Found',
       });
     });
     it('should fail if the password is wrong', async () => {
@@ -285,7 +285,7 @@ describe('UserSerivce', () => {
       const result = await service.verifyEmail('');
       expect(result).toEqual({
         ok: false,
-        error: 'Verification not found',
+        error: 'Verification Not Found',
       });
     });
     it('should fail on exception', async () => {
