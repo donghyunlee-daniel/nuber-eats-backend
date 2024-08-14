@@ -97,10 +97,10 @@ export class RestaurantService {
       return {
         ok: true,
       };
-    } catch (error) {
+    } catch{
       return {
         ok: false,
-        error,
+        error:'Could not edit the restaruant'
       };
     }
   }

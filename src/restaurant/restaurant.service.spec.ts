@@ -107,22 +107,27 @@ describe('RestaurantService', () => {
     });
   });
   describe('editRestaurant', () => {
-    const editRestaurantArgs = {
-      restaurantId: 1,
-      name: 'new',
-    };
+    const editRestaurantArgs = [
+      {
+        restaurantId: 1,
+        id: 1,
+        name: 'new',
+        categoryName: 'test',
+        category: Category,
+      },
+    ];
     it('should fail on restaurant not found', async () => {
       // find restaurant
       restaurantRepository.findOne.mockResolvedValue(null);
       const result = await service.editRestaurant(
         mockedUser,
-        editRestaurantArgs,
+        editRestaurantArgs[0],
       );
 
       expect(restaurantRepository.findOne).toHaveBeenCalledTimes(1);
       expect(restaurantRepository.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: editRestaurantArgs.restaurantId },
+          where: { id: editRestaurantArgs[0].restaurantId },
         }),
       );
       expect(result).toEqual({ ok: false, error: 'Restaurant Not Found' });
@@ -134,18 +139,61 @@ describe('RestaurantService', () => {
       restaurantRepository.findOne.mockResolvedValue(mockedRestaurant);
       const result = await service.editRestaurant(
         mockedUser,
-        editRestaurantArgs,
+        editRestaurantArgs[0],
       );
 
       expect(restaurantRepository.findOne).toHaveBeenCalledTimes(1);
       expect(restaurantRepository.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { id: editRestaurantArgs.restaurantId },
+          where: { id: editRestaurantArgs[0].restaurantId },
         }),
       );
       expect(result).toEqual({
         ok: false,
         error: 'You cannot edit a restaurant that you do not own',
+      });
+    });
+    it('should change name of the restaurant', async () => {
+      const oldRest = {
+        restauratId: 1,
+        ownerId: 1,
+        name: '',
+      };
+
+      restaurantRepository.findOne.mockResolvedValue(oldRest);
+      expect(oldRest.ownerId).toEqual(mockedUser.id);
+
+      const result = await service.editRestaurant(
+        mockedUser,
+        editRestaurantArgs[0],
+      );
+
+      expect(categoryRepository.getOrCreate).toHaveBeenCalledTimes(1);
+      expect(categoryRepository.getOrCreate).toHaveBeenCalledWith(
+        editRestaurantArgs[0].categoryName,
+      );
+      expect(restaurantRepository.save).toHaveBeenCalledTimes(1);
+      expect(restaurantRepository.save).toHaveBeenCalledWith(
+        editRestaurantArgs,
+      );
+      expect(result).toEqual({ ok: true });
+    });
+    it('should fail on exception', async () => {
+      restaurantRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.editRestaurant(
+        mockedUser,
+        editRestaurantArgs[0],
+      );
+
+      expect(restaurantRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(restaurantRepository.findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: editRestaurantArgs[0].restaurantId },
+        }),
+      );
+      expect(result).toEqual({
+        ok: false,
+        error: 'Could not edit the restaruant',
       });
     });
   });
