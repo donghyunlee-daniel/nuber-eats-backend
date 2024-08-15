@@ -97,10 +97,10 @@ export class RestaurantService {
       return {
         ok: true,
       };
-    } catch{
+    } catch {
       return {
         ok: false,
-        error:'Could not edit the restaruant'
+        error: 'Could not edit the restaruant',
       };
     }
   }
@@ -109,20 +109,20 @@ export class RestaurantService {
     owner: User,
     { restaurantId }: DeleteRestaurantInput,
   ): Promise<DeleteRestaurantOutput> {
-    const restaurant = await this.restaurants.findOne({
-      where: { id: restaurantId },
-    });
-    if (!restaurant)
-      return {
-        ok: false,
-        error: 'Restaurant Not Found',
-      };
-    if (owner.id !== restaurant.ownerId)
-      return {
-        ok: false,
-        error: 'You cannot delete a restaurant that you do not own',
-      };
     try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id: restaurantId },
+      });
+      if (!restaurant)
+        return {
+          ok: false,
+          error: 'Restaurant Not Found',
+        };
+      if (owner.id !== restaurant.ownerId)
+        return {
+          ok: false,
+          error: 'You cannot delete a restaurant that you do not own',
+        };
       await this.restaurants.delete(restaurantId);
       return {
         ok: true,
@@ -181,7 +181,6 @@ export class RestaurantService {
       });
       category.restaurants = restaurants;
       const totalResults = await this.countRestaurant(category);
-      console.log(totalResults);
       return {
         ok: true,
         category,
@@ -252,6 +251,8 @@ export class RestaurantService {
           //name: ILike(`%${query}%`)    same as
           name: Raw((name) => `${name} ILIKE '%${query}%'`),
         },
+        take: 3,
+        skip: (page - 1) * 3,
       });
       return {
         ok: true,
@@ -323,9 +324,9 @@ export class RestaurantService {
         };
       }
       await this.dishes.save([{ id: editDishInput.dishId, ...editDishInput }]);
-      return{
+      return {
         ok: true,
-      }
+      };
     } catch {
       return {
         ok: false,
