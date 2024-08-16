@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Restaurant } from './entities/restaurant.entity';
-import { ILike, Like, Raw, Repository } from 'typeorm';
+import * as typeorm from 'typeorm';
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -34,10 +34,10 @@ import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto';
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
-    private readonly restaurants: Repository<Restaurant>,
+    private readonly restaurants: typeorm.Repository<Restaurant>,
     private readonly categories: CateogryRepository,
     @InjectRepository(Dish)
-    private readonly dishes: Repository<Dish>,
+    private readonly dishes: typeorm.Repository<Dish>,
   ) {}
 
   async createRestaurant(
@@ -249,7 +249,7 @@ export class RestaurantService {
       const [restaurants, totalResults] = await this.restaurants.findAndCount({
         where: {
           //name: ILike(`%${query}%`)    same as
-          name: Raw((name) => `${name} ILIKE '%${query}%'`),
+          name: typeorm.Raw((name) => `${name} ILIKE '%${query}%'`),
         },
         take: 3,
         skip: (page - 1) * 3,
@@ -335,7 +335,7 @@ export class RestaurantService {
     }
   }
 
-  async deleteDishInput(
+  async deleteDish(
     owner: User,
     deleteDishInput: DeleteDishInput,
   ): Promise<DeleteDishOutput> {
