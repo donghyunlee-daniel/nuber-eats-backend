@@ -132,6 +132,6 @@ export class DishResolver{
   @Mutation(type => DeleteDishOutput)
   @Role(["Owner"])
   deleteDish(@AuthUser() owner: User, @Args('input') deleteDishInput: DeleteDishInput) : Promise<DeleteDishOutput>{
-    return this.restaurantService.deleteDishInput(owner,deleteDishInput);
+    return this.restaurantService.deleteDish(owner,deleteDishInput);
   }
 }
