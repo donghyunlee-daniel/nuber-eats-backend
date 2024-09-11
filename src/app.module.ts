@@ -51,7 +51,7 @@ import { OrderItem } from './orders/entities/order-item.entity';
         if (req) {
           return { user: req['user'] };
         } else {
-          console.log(connection);
+          return {potato: "hot"}
         }
       },
     }),
@@ -91,11 +91,4 @@ import { OrderItem } from './orders/entities/order-item.entity';
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: '/graphql',
-      method: RequestMethod.POST,
-    });
-  }
-}
+export class AppModule{}
