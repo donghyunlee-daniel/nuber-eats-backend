@@ -47,11 +47,17 @@ import { OrderItem } from './orders/entities/order-item.entity';
       installSubscriptionHandlers: true,
       driver: ApolloDriver,
       autoSchemaFile: true,
-      context: ({ req, connection, ...rest }) => {
-        if (req) {
-          return { user: req['user'] };
-        } else {
-          return {potato: "hot"}
+      subscriptions:{
+        'subscriptions-transport-ws': {
+          onConnect:(connectionParams:any) => ({
+            token:connectionParams['x-jwt'],
+          })
+        }
+      },
+      context: ({ req, connection}) => { 
+        const TOKEN_KEY = 'x-jwt'
+        return{ 
+          token: req? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY]
         }
       },
     }),

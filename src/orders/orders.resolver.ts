@@ -50,7 +50,7 @@ export class OrderResolver {
     @Args('input') editOrderInput: EditOrderInput,
   ): Promise<EditOrderOutput> {
     return this.ordersService.editOrder(user, editOrderInput);
-  }
+  } 
 
   @Mutation((returns) => Boolean)
   potatoReady() {
