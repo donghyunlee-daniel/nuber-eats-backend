@@ -56,8 +56,8 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - Orders CRUD
 - Orders Subscription (Owner, Delivery, Client)
  - Pending Orders (Owner) (subscribing: newOrder)(trigger: createOrder(newOrder))
- - Order Status (Client) (subscribing: orderUpdate) (trigger: editOrder(orderUpdate))
  - Pending Pickup Order (Delivery) (subscribing: orderUpdate) (trigger: editOrder(orderUpdate))
+ - Order Status (Client) (subscribing: orderUpdate) (trigger: editOrder(orderUpdate))
 
 ## Payment
 - Using 'Paddle'  
