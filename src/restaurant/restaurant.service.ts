@@ -176,8 +176,11 @@ export class RestaurantService {
             id: category.id,
           },
         },
-        take: 3,
-        skip: (page - 1) * 3,
+        take: 25,
+        skip: (page - 1) * 25,
+        order:{
+          isPromoted:"DESC"
+        }
       });
       category.restaurants = restaurants;
       const totalResults = await this.countRestaurant(category);
@@ -185,7 +188,7 @@ export class RestaurantService {
         ok: true,
         category,
         restaurants,
-        totalPages: Math.ceil(totalResults / 3),
+        totalPages: Math.ceil(totalResults / 25),
       };
     } catch {
       return {
@@ -198,13 +201,16 @@ export class RestaurantService {
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
       const [results, totalResults] = await this.restaurants.findAndCount({
-        take: 3,
-        skip: (page - 1) * 3,
+        take: 25,
+        skip: (page - 1) * 25,
+        order:{
+          isPromoted:"DESC"
+        }
       });
       return {
         ok: true,
         results,
-        totalPages: Math.ceil(totalResults / 3),
+        totalPages: Math.ceil(totalResults / 25),
         totalResults,
       };
     } catch {
@@ -251,13 +257,13 @@ export class RestaurantService {
           //name: ILike(`%${query}%`)    same as
           name: typeorm.Raw((name) => `${name} ILIKE '%${query}%'`),
         },
-        take: 3,
-        skip: (page - 1) * 3,
+        take: 25,
+        skip: (page - 1) * 25,
       });
       return {
         ok: true,
         restaurants,
-        totalPages: Math.ceil(totalResults / 3),
+        totalPages: Math.ceil(totalResults / 25),
         totalResults,
       };
     } catch {
