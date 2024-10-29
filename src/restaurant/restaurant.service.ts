@@ -201,6 +201,7 @@ export class RestaurantService {
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
       const [results, totalResults] = await this.restaurants.findAndCount({
+        relations:['category'],
         take: 25,
         skip: (page - 1) * 25,
         order:{
