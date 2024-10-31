@@ -176,8 +176,8 @@ export class RestaurantService {
             id: category.id,
           },
         },
-        take: 25,
-        skip: (page - 1) * 25,
+        take: 3,
+        skip: (page - 1) * 3,
         order:{
           isPromoted:"DESC"
         }
@@ -188,7 +188,8 @@ export class RestaurantService {
         ok: true,
         category,
         restaurants,
-        totalPages: Math.ceil(totalResults / 25),
+        totalResults,
+        totalPages: Math.ceil(totalResults / 3),
       };
     } catch {
       return {
