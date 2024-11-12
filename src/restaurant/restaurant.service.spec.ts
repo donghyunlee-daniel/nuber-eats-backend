@@ -378,11 +378,12 @@ describe('RestaurantService', () => {
       expect(restaurantRepository.count).toHaveBeenCalledWith({
         where: { category: { id: mockedCategory.id } },
       });
-
+      
       expect(result).toEqual({
         ok: true,
         category: mockedCategory,
         restaurants: mockedRestaurants,
+        totalResults: 1,
         totalPages: 1,
       });
     });
@@ -448,7 +449,7 @@ describe('RestaurantService', () => {
       expect(restaurantRepository.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: findRestaurantByIdArgs.restaurantId },
-          relations: ['menu'],
+          relations: ['menu','category'],
         }),
       );
       expect(result).toEqual({
@@ -467,7 +468,7 @@ describe('RestaurantService', () => {
       expect(restaurantRepository.findOne).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: findRestaurantByIdArgs.restaurantId },
-          relations: ['menu'],
+          relations: ['menu','category'],
         }),
       );
       expect(result).toEqual({
@@ -497,13 +498,13 @@ describe('RestaurantService', () => {
         searchRestaurantByNameArgs,
       );
       expect(restaurantRepository.findAndCount).toHaveBeenCalledTimes(1);
-      // expect(restaurantRepository.findAndCount).toHaveBeenCalledWith(expect.objectContaining({
+      // expect(restaurantRepository.findAndCount).toHaveBeenCalledWith({
       //   where: {
       //     name: typeorm.Raw((name) => `${name} ILIKE '%${searchRestaurantByNameArgs.query}%'`)
       //   },
-      //   take: 3,
+      //   take: 25,
       //   skip: (searchRestaurantByNameArgs.page -1) * 3
-      // }))
+      // })
 
       expect(result).toEqual({
         ok: true,
