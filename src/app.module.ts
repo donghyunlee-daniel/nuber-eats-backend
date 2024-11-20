@@ -1,7 +1,5 @@
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import * as Joi from 'joi';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,6 +21,7 @@ import { CommonModule } from './common/common.module';
 import { PaymentsModule } from './payments/payments.module';
 import { Payment } from './payments/entities/payment.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -41,24 +40,26 @@ import { ScheduleModule } from '@nestjs/schedule';
         MAILGUN_API_KEY: Joi.string().required(),
         MAILGUN_DOMAIN_NAME: Joi.string().required(),
         MAILGUN_FROM_EMAIL: Joi.string().required(),
+        AWS_ACCESS_KEY: Joi.string().required(),
+        AWS_SECRET_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       installSubscriptionHandlers: true,
       driver: ApolloDriver,
       autoSchemaFile: true,
-      subscriptions:{
+      subscriptions: {
         'subscriptions-transport-ws': {
-          onConnect:(connectionParams:any) => ({
-            token:connectionParams['x-jwt'],
-          })
-        }
+          onConnect: (connectionParams: any) => ({
+            token: connectionParams['x-jwt'],
+          }),
+        },
       },
-      context: ({ req, connection}) => { 
-        const TOKEN_KEY = 'x-jwt'
-        return{ 
-          token: req? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY]
-        }
+      context: ({ req, connection }) => {
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
       },
     }),
     TypeOrmModule.forRoot({
@@ -96,9 +97,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     RestaurantModule,
     OrdersModule,
     CommonModule,
-    PaymentsModule
+    PaymentsModule,
+    UploadsModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule{}
+export class AppModule {}
