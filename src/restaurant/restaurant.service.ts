@@ -55,6 +55,7 @@ export class RestaurantService {
       await this.restaurants.save(newRestaurant);
       return {
         ok: true,
+        restaurantId: newRestaurant.id
       };
     } catch {
       return {
@@ -381,6 +382,7 @@ export class RestaurantService {
     try {
       const restaurants = await this.restaurants.find({
         where: { owner: { id: owner.id } },
+        relations:['category']
       });
       return {
         restaurants,
