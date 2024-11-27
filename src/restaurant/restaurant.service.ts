@@ -257,7 +257,7 @@ export class RestaurantService {
     {id} : MyRestaurantInput
   ) : Promise<MyRestaurantOutput>{
     try{
-      const restaurant = await this.restaurants.findOne({where: {owner:{id:owner.id},id:id}, relations:['menu']})
+      const restaurant = await this.restaurants.findOne({where: {owner:{id:owner.id},id:id}, relations:['menu','orders']})
       return{
         restaurant,
         ok:true
