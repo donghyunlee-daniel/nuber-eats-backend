@@ -15,6 +15,7 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - JWT (Authentication)
 - Guard
 - Joi (Validation)
+- GraphQL-WS (Web Socket)
 
 
 ## User Entity:
