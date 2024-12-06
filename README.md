@@ -2,7 +2,7 @@
 
 The Backend of Nuber Eats Clone
 
-## Develope Diary (Error notes, thoughts and what I have learned)
+## Develop Diary (Error notes, thoughts and what I have learned)
 https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/edit?usp=sharing
 
  ## Use
@@ -14,6 +14,7 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
 - bcript (Hash)
 - JWT (Authentication)
 - Guard
+- Joi (Validation)
 
 
 ## User Entity:
@@ -59,6 +60,3 @@ https://docs.google.com/document/d/1OKuxbB5rHXZ_7k0b1ziKvdQxIGjcXaYHMV-59-zcE30/
  - Pending Pickup Order (Delivery) (subscribing: orderUpdate) (trigger: editOrder(orderUpdate))
  - Order Status (Client) (subscribing: orderUpdate) (trigger: editOrder(orderUpdate))
 
-## Payment
-- Using 'Paddle'  
-- Payments (CRON)
